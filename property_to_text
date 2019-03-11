@@ -1,0 +1,42 @@
+package email;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Scanner;
+import java.util.Set;
+
+public class email
+{
+	public static void main(String s[]) throws IOException
+	{
+		Scanner sc=new Scanner(System.in);
+	    PrintWriter out = new PrintWriter("D:\\email.txt");
+	    System.out.print("Enter property file name");
+	    String fileName=sc.next();
+	    FileReader reader=new FileReader(fileName+".properties");  
+        String mail="";
+	    Properties p=new Properties();  
+	    p.load(reader);   
+	    Set set=p.entrySet();  
+	    Iterator itr=set.iterator();  
+	    while(itr.hasNext()){  
+	    Map.Entry entry=(Map.Entry)itr.next();  
+	    mail=(String)entry.getValue(); 
+	    System.out.println(mail);
+	 
+	   }  
+	    String emailSplit[]=mail.split(",");
+	    for(int i=0;i<emailSplit.length;i++) {
+	    	emailSplit[i]=i+1+". "+emailSplit[i];
+	    out.println(emailSplit[i]);
+	   
+	    }
+	    out.close();
+	}
+}
