@@ -1,0 +1,145 @@
+package property_to_excel;
+
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Scanner;
+import java.util.Set;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+public class property_to_excel {
+	public static void main(String s[]) throws IOException {
+		FileReader reader = new FileReader("Config.properties");
+		Properties properties = new Properties();
+		properties.load(reader);
+		Set set = properties.stringPropertyNames();
+		String keys[] = new String[set.size()];
+		String values[][] = new String[set.size()][50];
+		int no_of_value = 0;
+		int row = 0, index = 1;
+		Iterator itr = set.iterator();
+		while (itr.hasNext()) {
+            keys[row] = (String) itr.next();
+			String prop = properties.getProperty(keys[row]);
+            String[] propSplit = prop.split(",");
+			no_of_value = propSplit.length;
+            for (int column = 0; column < no_of_value; column++) {
+
+				values[row][column] = propSplit[column];
+
+			}
+
+			row++;
+		}
+
+		String transposeValues[][] = new String[row][no_of_value];
+		for (int rowCount = 0; rowCount < row; rowCount++) {
+			for (int column = 0; column < no_of_value; column++) {
+				transposeValues[column][rowCount] = values[rowCount][column];
+			}
+			}
+
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("sheet");
+		XSSFFont font = workbook.createFont();
+		XSSFFont font1 = workbook.createFont();
+		XSSFCellStyle style = workbook.createCellStyle();
+		CellStyle style1 = workbook.createCellStyle();
+		CellStyle style2 = workbook.createCellStyle();
+		font.setBold(true);
+		font1.setColor(HSSFColor.RED.index);
+		style.setFont(font);
+		style1.setWrapText(true);
+		style2.setFont(font1);
+		System.out.print("enter comment to be entered");
+		Scanner sc = new Scanner(System.in);
+		String Comments = sc.next();
+		Row row1;
+		Cell cell;
+		int columnIndex = 1;
+		int rowIndex = 0;
+		int k = 0;
+		System.out.print(row);
+		System.out.print(no_of_value);
+		for (rowIndex = 0; rowIndex <= no_of_value; rowIndex++) {
+			row1 = sheet.createRow(rowIndex);
+
+			if (rowIndex == 0) {
+				System.out.println("Successfully implemented");
+				cell = row1.createCell(row + 1);
+				cell.setCellStyle(style1);
+				cell.setCellStyle(style);
+				cell.setCellStyle(style2);
+				cell.setCellValue("Comments");
+				cell = row1.createCell(0);
+				cell.setCellStyle(style1);
+				cell.setCellStyle(style);
+				cell.setCellValue("Index");
+				for (int i = 0; i < keys.length; i++) {
+					cell = row1.createCell(columnIndex);
+					cell.setCellStyle(style1);
+					cell.setCellStyle(style);
+					cell.setCellValue(keys[i]);
+					System.out.print(keys[i]);
+					columnIndex++;
+				}
+
+			} else {
+				k = 0;
+				String str = null;
+				int column = 1;
+                cell = row1.createCell(row + 1);
+				cell.setCellStyle(style1);
+				cell.setCellValue(Comments);
+				cell = row1.createCell(0);
+				cell.setCellStyle(style1);
+				cell.setCellValue(index);
+				index++;
+				cell.setCellStyle(style1);
+                 while (column < 3) {
+
+					cell = row1.createCell(column);
+					cell.setCellStyle(style1);
+					str = transposeValues[rowIndex - 1][k];
+
+					cell.setCellValue(str);
+					k++;
+					column++;
+				}
+
+				System.out.println();
+
+			}
+
+		}
+
+		Iterator<Row> itr1 = sheet.rowIterator();
+		int columncount = 1, no_of_columns = 0;
+		Row row11;
+		if (itr1.hasNext()) {
+			row11 = (Row) itr1.next();
+			no_of_columns = row11.getPhysicalNumberOfCells();
+		}
+
+		for (int j = 0; j < no_of_columns; j++) {
+			System.out.print("Enter width of " + columncount + "st  column");
+			columncount++;
+			int width = sc.nextInt();
+			sheet.setColumnWidth(j, width);
+		}
+		FileOutputStream outputStream = new FileOutputStream("try.xlsx");
+		System.out.print("Successfully implemented");
+		workbook.write(outputStream);
+		outputStream.close();
+	}
+
+}
